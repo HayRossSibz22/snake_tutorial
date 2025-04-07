@@ -17,7 +17,7 @@ var regen_food : bool = true
 #snake variables
 var old_data : Array
 var snake_data : Array
-var snake : Array
+var snake : Array #make a class outside of main -> more oo
 
 #movement variables
 var start_pos = Vector2(9, 9)
@@ -28,11 +28,18 @@ var right = Vector2(1, 0)
 var move_direction : Vector2
 var can_move: bool
 
+#level logic
+var current_level : int = 1
+var store_open : bool = false
+var needed_score = 10
+var score_mult = 10
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	new_game()
 	
 func new_game():
+	needed_score = current_level * score_mult
 	get_tree().paused = false
 	get_tree().call_group("segments", "queue_free")
 	$GameOverMenu.hide()
@@ -44,17 +51,31 @@ func new_game():
 	move_food()
 	
 func generate_snake():
-	old_data.clear()
+	old_data.clear() #if level != 1 change to save else load new 
 	snake_data.clear()
 	snake.clear()
 	#starting with the start_pos, create tail segments vertically down
+	add_head(start_pos)
 	for i in range(3):
-		add_segment(start_pos + Vector2(0, i))
+		add_segment(start_pos + Vector2(0, i+1))
 		
+func add_head(pos):
+	snake_data.append(pos) #change to save
+	var SnakeSegment = snake_scene.instantiate()
+	SnakeSegment.head = "red"
+	SnakeSegment.special = "standard"
+	SnakeSegment.position = (pos * cell_size) + Vector2(0, cell_size)
+	SnakeSegment.look() #remove if I can call this on _ready
+	add_child(SnakeSegment)
+	snake.append(SnakeSegment)
+	
 func add_segment(pos):
 	snake_data.append(pos)
 	var SnakeSegment = snake_scene.instantiate()
+	SnakeSegment.head = "standard"
+	SnakeSegment.special = "standard"
 	SnakeSegment.position = (pos * cell_size) + Vector2(0, cell_size)
+	SnakeSegment.look() #remove if I can call this on _ready
 	add_child(SnakeSegment)
 	snake.append(SnakeSegment)
 	
@@ -116,12 +137,14 @@ func check_self_eaten():
 			end_game()
 			
 func check_food_eaten():
-	#if snake eats the food, add a segment and move the food
 	if snake_data[0] == food_pos:
 		score += 1
 		$Hud.get_node("ScoreLabel").text = "SCORE: " + str(score)
 		add_segment(old_data[-1])
 		move_food()
+		
+		if score >= needed_score:
+			open_store()
 	
 func move_food():
 	while regen_food:
@@ -132,6 +155,17 @@ func move_food():
 				regen_food = true
 	$Food.position = (food_pos * cell_size)+ Vector2(0, cell_size)
 	regen_food = true
+	
+func open_store():
+	store_open = true
+	game_started = false
+	get_tree().paused = true
+
+	var store_scene = preload("res://scenes/Store.tscn")
+	var store_instance = store_scene.instantiate()
+	add_child(store_instance)
+
+	store_instance.connect("store_closed", Callable(self, "_on_store_closed"))
 
 func end_game():
 	$GameOverMenu.show()

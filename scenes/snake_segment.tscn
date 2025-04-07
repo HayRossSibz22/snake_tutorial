@@ -1,18 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://beaa828xfn3nx"]
+[gd_scene load_steps=3 format=3 uid="uid://beaa828xfn3nx"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mb3th"]
-bg_color = Color(0.192157, 0.654902, 0, 0.784314)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.270588, 0.580392, 0, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
+[ext_resource type="Script" uid="uid://d4gryyjw4pvnh" path="res://scenes/snake_segment.gd" id="1_1sg3p"]
+[ext_resource type="StyleBox" uid="uid://r3hueh5fbi1c" path="res://standard.tres" id="1_h8cp3"]
 
 [node name="SnakeSegment" type="Panel" groups=["segments"]]
 offset_right = 50.0
 offset_bottom = 50.0
-theme_override_styles/panel = SubResource("StyleBoxFlat_mb3th")
+theme_override_styles/panel = ExtResource("1_h8cp3")
+script = ExtResource("1_1sg3p")
