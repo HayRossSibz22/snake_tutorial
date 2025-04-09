@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://d4gryyjw4pvnh" path="res://scenes/snake_segment.gd" id="1_1sg3p"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1sg3p"]
-bg_color = Color(0.94902, 0.592157, 0.266667, 1)
 
 [node name="SnakeSegment" type="Panel" groups=["segments"]]
 offset_right = 50.0

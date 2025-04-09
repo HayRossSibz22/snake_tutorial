@@ -5,6 +5,7 @@ extends Node
 #game variables
 var score : int
 var game_started : bool = false
+var is_paused : bool = false
 
 #grid variables
 var cells : int = 20
@@ -33,6 +34,21 @@ var current_level : int = 1
 var store_open : bool = false
 var needed_score = 10
 var score_mult = 10
+var map_mult = 2
+var speed_mult = 1.25
+##############
+
+#add a different class for a more complex map generation.
+
+###############
+######################
+#Add function to calculate map based on level. 
+
+#needs to change the map that loads + 
+
+#
+######################
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -55,27 +71,21 @@ func generate_snake():
 	snake_data.clear()
 	snake.clear()
 	#starting with the start_pos, create tail segments vertically down
-	add_head(start_pos)
+	add_segment(start_pos, true)
 	for i in range(3):
-		add_segment(start_pos + Vector2(0, i+1))
-		
-func add_head(pos):
-	snake_data.append(pos) #change to save
-	var SnakeSegment = snake_scene.instantiate()
-	SnakeSegment.head = "red"
-	SnakeSegment.special = "standard"
-	SnakeSegment.position = (pos * cell_size) + Vector2(0, cell_size)
-	SnakeSegment.look() #remove if I can call this on _ready
-	add_child(SnakeSegment)
-	snake.append(SnakeSegment)
+		add_segment(start_pos + Vector2(0, i+1), false)
+
 	
-func add_segment(pos):
+func add_segment(pos, is_head):
 	snake_data.append(pos)
 	var SnakeSegment = snake_scene.instantiate()
-	SnakeSegment.head = "standard"
+	if is_head == true:
+		SnakeSegment.head = "red"
+	else:
+		SnakeSegment.head = "standard"
 	SnakeSegment.special = "standard"
 	SnakeSegment.position = (pos * cell_size) + Vector2(0, cell_size)
-	SnakeSegment.look() #remove if I can call this on _ready
+	SnakeSegment.apply_look() #remove if I can call this on _ready
 	add_child(SnakeSegment)
 	snake.append(SnakeSegment)
 	
@@ -140,7 +150,7 @@ func check_food_eaten():
 	if snake_data[0] == food_pos:
 		score += 1
 		$Hud.get_node("ScoreLabel").text = "SCORE: " + str(score)
-		add_segment(old_data[-1])
+		add_segment(old_data[-1], false)
 		move_food()
 		
 		if score >= needed_score:
@@ -148,12 +158,14 @@ func check_food_eaten():
 	
 func move_food():
 	while regen_food:
+		print("regen_food hit")
 		regen_food = false
 		food_pos = Vector2(randi_range(0, cells - 1), randi_range(0, cells - 1))
 		for i in snake_data:
 			if food_pos == i:
 				regen_food = true
 	$Food.position = (food_pos * cell_size)+ Vector2(0, cell_size)
+	print("food position", $Food.position)
 	regen_food = true
 	
 func open_store():
@@ -161,7 +173,7 @@ func open_store():
 	game_started = false
 	get_tree().paused = true
 
-	var store_scene = preload("res://scenes/Store.tscn")
+	var store_scene = preload("res://scenes/Store.tscn").initaite()
 	var store_instance = store_scene.instantiate()
 	add_child(store_instance)
 
@@ -175,4 +187,7 @@ func end_game():
 
 
 func _on_game_over_menu_restart():
+	new_game()
+	
+func _on_pause():
 	new_game()

@@ -12,36 +12,36 @@ const TYPE_COSTS = {
 	"ghost_train": 5,
 	"armor": 5,
 	"slow_down": 5,
+	"laser": 5
 }
-@onready var standard = ("res://standard.tres")
-@onready var ghost = ("res://standard.tres")
-@onready var red = ("res://standard.tres")
 
-var LOOK = {
+var standard = preload("res://standard.tres")
+var ghost = preload("res://ghost.tres")
+var red = preload("res://red.tres")
+
+var flats = {
 	"standard": standard,
 	"ghost": ghost,
 	"red": red
 }
 
 const HEADS = ["red"]
-
-func _ready() -> void:
-	look()
 	
-func look() -> void:
-	var new_stylebox_normal = get_theme_stylebox("normal").duplicate()
-
+func apply_look() -> void:
+	var style_box = ("normal")
 	if is_head():
-		new_stylebox_normal = LOOK.get(head)
+		style_box = flats.get(head)
+		print(style_box)
+		add_theme_stylebox_override("normal", style_box)
 	elif is_special():
-		new_stylebox_normal = LOOK.get(special)
-	else:
-		new_stylebox_normal = LOOK.get(standard)
-	add_theme_stylebox_override("panel", new_stylebox_normal)
+		style_box = flats.get(special)
+		add_theme_stylebox_override("normal", style_box)
+	#else:
+		#add_theme_stylebox_override("normal", style_box)
 	
 
 #func _init(special: String, is_head: bool): #maybe not needed
-#	special = special
+#	special = specials
 #	head = is_head
 	
 	#if head==true:
@@ -60,4 +60,5 @@ func is_head() -> bool:
 	if head in HEADS:
 		return true
 	return false
+
 		

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://0ep2msceuv4b"]
+
+[ext_resource type="Script" uid="uid://bmf0q2na4waa6" path="res://Snake.gd" id="1_ati24"]
+
+[node name="Node" type="Node"]
+script = ExtResource("1_ati24")
